@@ -15,6 +15,8 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.List;
 import java.util.Map;
 import java.io.File;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 @RestController
 @RequestMapping("/api/validation")
@@ -31,10 +33,13 @@ public class ValidationController {
     private static final String SSP_RESOURCE = "src/main/java/com/example/demo/rules/rev4/ssp.sch.xsl";
 
     public ValidationController() {
+        Path sspResourcePath = Paths.get(SSP_RESOURCE);
+        Path resourcesPath = Paths.get(RESOURCES_PATH);
+        Path baseLinesPath = Paths.get(BASELINES_PATH);        
         try {
-            this.validator = new FedrampAutomationValidator(new File(SSP_RESOURCE).getAbsolutePath(),
-                    new File(BASELINES_PATH).getAbsolutePath(),
-                    new File(RESOURCES_PATH).getAbsolutePath());
+            this.validator = new FedrampAutomationValidator(sspResourcePath.toAbsolutePath().toString(),
+                    baseLinesPath.toUri().toString(),
+                    resourcesPath.toUri().toString());
         } catch (SaxonApiException e) {
             throw new RuntimeException("Error initializing FedrampAutomationValidator", e);
         }
